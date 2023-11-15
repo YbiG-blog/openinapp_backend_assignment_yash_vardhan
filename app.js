@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const app = express();
 const { listMessages, sendAutoReply, addLabel, fetchThreadInfo } = require('./gmail');

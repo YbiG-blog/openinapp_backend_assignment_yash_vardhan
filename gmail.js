@@ -2,7 +2,7 @@
 const { google } = require('googleapis');
 const { getOAuthClient } = require('./auth');
 
-const listMessages = async ()=>{
+const listMessages = async () => {
   const auth = await getOAuthClient();
   const gmail = google.gmail({ version: 'v1', auth });
 
@@ -18,7 +18,7 @@ const listMessages = async ()=>{
   }
 }
 
-const sendAutoReply= async (messageId)=>{
+const sendAutoReply = async (messageId) => {
   const auth = await getOAuthClient();
 
   const gmail = google.gmail({ version: 'v1', auth });
@@ -28,7 +28,7 @@ const sendAutoReply= async (messageId)=>{
       userId: 'me',
       id: messageId,
     });
-  console.log("message : ",message);
+    console.log("message : ", message);
 
     const headers = message.data.payload.headers;
     const originalSenderHeader = headers.find(header => header.name === 'From');
@@ -47,10 +47,10 @@ const sendAutoReply= async (messageId)=>{
       requestBody: {
         raw: Buffer.from(
           `From: "Yash Vardhan" <localacc7906@gmail.com>\r\n` +
-            `To: ${originalSender}\r\n` +
-            `Subject: Re: ${subject}\r\n` +
-            `\r\n` +
-            `${autoReply}`
+          `To: ${originalSender}\r\n` +
+          `Subject: Re: ${subject}\r\n` +
+          `\r\n` +
+          `${autoReply}`
         ).toString('base64'),
       },
     });
@@ -59,29 +59,7 @@ const sendAutoReply= async (messageId)=>{
   }
 }
 
-const addLabel = async (messageId, labelName)=>{
-  const auth = await getOAuthClient();
-  const gmail = google.gmail({ version: 'v1', auth });
-
-  try {
-    await gmail.users.messages.modify({
-      userId: 'me',
-      id: messageId,
-      requestBody: {
-        addLabelIds: [labelName],
-      },
-    });
-
-    await gmail.users.messages.trash({
-      userId: 'me',
-      id: messageId,
-    });
-  } catch (error) {
-    throw new Error(`Error in labeling : ${error.message}`);
-  }
-}
-
-const fetchThreadInfo = async(threadId)=>{
+const fetchThreadInfo = async (threadId) => {
   const auth = await getOAuthClient();
   const gmail = google.gmail({ version: 'v1', auth });
 
@@ -96,5 +74,42 @@ const fetchThreadInfo = async(threadId)=>{
     throw new Error(`Error fetching thread information: ${error.message}`);
   }
 }
+
+const addLabel = async (messageId, labelName) => {
+  const auth = await getOAuthClient();
+  const gmail = google.gmail({ version: 'v1', auth });
+
+  try {
+    // Check existing labels
+    const existingLabels = await gmail.users.labels.list({
+      userId: 'me',
+    });
+    // Check if the label exists
+    const labelExists = existingLabels.data.labels.some(label => label.name === labelName);
+
+    // Create the label if it doesn't exist
+    if (!labelExists) {
+      await gmail.users.labels.create({
+        userId: 'me',
+        requestBody: {
+          name: labelName,
+        },
+      });
+    }
+
+    // Apply the label and move the message to trash
+    await gmail.users.messages.modify({
+      userId: 'me',
+      id: messageId,
+      requestBody: {
+        addLabelIds: [labelName],
+        removeLabelIds: existingLabels.data.labels.map(label => label.id),
+      },
+    });
+
+  } catch (error) {
+    throw new Error(`Error in labeling: ${error.message}`);
+  }
+};
 
 module.exports = { listMessages, sendAutoReply, addLabel, fetchThreadInfo };

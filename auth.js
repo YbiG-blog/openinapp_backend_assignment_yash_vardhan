@@ -1,4 +1,3 @@
-// auth.js
 const { google } = require('googleapis');
 const { promisify } = require('util');
 const fs = require('fs');
