@@ -17,7 +17,7 @@ app.get('/', async (req, res) => {
 
       if (await hasNoReplies(messageId)) {
         await sendAutoReply(messageId);
-        await addLabel(messageId,'Vacation Replies by Yash');
+        await addLabel(messageId,'Vacation_Replies_by_Yash');
       }
     }
     res.send('Processing completed.');
