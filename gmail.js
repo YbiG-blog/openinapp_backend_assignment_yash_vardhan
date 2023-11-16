@@ -114,39 +114,4 @@ const addLabel = async (messageId, labelName) => {
   }
 };
 
-// const addLabel = async (messageId, labelName) => {
-//   try {
-//   const auth = await getOAuthClient();
-//   const gmail = google.gmail({ version: 'v1', auth });
-//     // Check existing labels
-//     const existingLabels = await gmail.users.labels.list({
-//       userId: 'me',
-//     });
-//     // Check if the label exists
-//     const labelExists = existingLabels.data.labels.some(label => label.name === labelName);
-
-//     // Create the label if it doesn't exist
-//     if (!labelExists) {
-//       await gmail.users.labels.create({
-//         userId: 'me',
-//         requestBody: {
-//           name: labelName,
-//         },
-//       });
-//     }
-
-//     // Apply the label and move the message to trash
-//     await gmail.users.messages.modify({
-//       userId: 'me',
-//       id: messageId,
-//       requestBody: {
-//         addLabelIds: [labelName]
-//       }
-//     });
-    
-//   } catch (error) {
-//     throw new Error(`Error in labeling: ${error.message}`);
-//   }
-// };
-
 module.exports = { listMessages, sendAutoReply, addLabel, fetchThreadInfo };
