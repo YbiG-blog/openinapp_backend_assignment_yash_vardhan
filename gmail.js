@@ -28,9 +28,10 @@ const sendAutoReply = async (messageId) => {
       userId: 'me',
       id: messageId,
     });
-    console.log("message : ", message);
+    // console.log("message : ", message);
 
     const headers = message.data.payload.headers;
+    // console.log("headers : ", headers);
     const originalSenderHeader = headers.find(header => header.name === 'From');
     const originalSender = originalSenderHeader ? originalSenderHeader.value : undefined;
     const subjectHeader = headers.find(header => header.name === 'Subject');
@@ -68,7 +69,6 @@ const fetchThreadInfo = async (threadId) => {
       userId: 'me',
       id: threadId,
     });
-
     return response.data;
   } catch (error) {
     throw new Error(`Error fetching thread information: ${error.message}`);
@@ -96,12 +96,12 @@ const addLabel = async (messageId, labelName) => {
           name: labelName,
         },
       });
-      labelName = createdLabel.data.id; // Use the created label ID instead of name
+      labelName = createdLabel.data.id;
     } else {
       labelName = label.id; // Use the existing label ID
     }
 
-    // Apply the label and move the message to trash
+    // Apply the label and move the message to related label
     await gmail.users.messages.modify({
       userId: 'me',
       id: messageId,

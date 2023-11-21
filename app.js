@@ -14,8 +14,9 @@ app.get('/', async (req, res) => {
     const messages = await listMessages();
     for (const message of messages) {
       const messageId = message.id;
-
-      if (await hasNoReplies(messageId)) {
+    
+      if (await hasNoReplies(messageId) === false ) {
+        console.log("yash");
         await sendAutoReply(messageId);
         await addLabel(messageId,'Vacation_Replies_by_Yash');
       }
@@ -30,7 +31,14 @@ app.get('/', async (req, res) => {
 const hasNoReplies = async(messageId)=>{
   const threadId = (await listMessages(messageId))[0].threadId;
   const thread = await fetchThreadInfo(threadId);
-  return thread.messages.length === 1;
+
+  // console.log("thread.messages : ", thread.messages);
+  if ( Array.isArray(thread.messages) && thread.messages.length > 0) {
+    if (thread.messages[0].labelIds.includes('SENT') || thread.messages[0].labelIds.includes('Vacation_Replies_by_Yash')) {
+      return true;
+    }
+  }
+  return false;
 }
 
 const startApp = async()=>{

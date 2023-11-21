@@ -7,7 +7,6 @@ const readFileAsync = promisify(fs.readFile);
 const writeFileAsync = promisify(fs.writeFile);
 
 const getOAuthClient = async()=>{
-  // reading credentials from credentials.json file
   const credentials = await readFileAsync('./credentials.json');
 
   const { client_secret, client_id, redirect_uris } = JSON.parse(credentials).web;
